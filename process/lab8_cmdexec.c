@@ -34,7 +34,30 @@ int main()
 #else
 
 int main() {
+    pid_t pid = fork();
 
+    if (pid == 0) 
+    {
+        // In child
+        execlp("ls", "ls", "-l", NULL);
+        perror("execlp failed"); // If exec fails
+        exit(1);
+    } 
+    else if (pid > 0)
+     {
+        // In parent
+        int status;
+        waitpid(pid, &status, 0);
+        
+        if (WIFEXITED(status))
+         {
+            printf("Child exited with status %d\n", WEXITSTATUS(status));
+        }
+    }
+     else
+      {
+        perror("fork failed");
+    }
 
     return 0;
 }

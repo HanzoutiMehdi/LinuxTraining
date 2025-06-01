@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#define QUEUE_NAME  "/myqueue1"
+#define QUEUE_NAME  "/myqueue2"
 #define MAX_SIZE    1024
 int main()
  {

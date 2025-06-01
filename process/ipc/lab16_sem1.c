@@ -9,10 +9,14 @@
 
 int main() 
 {
+    sem_t *sem = sem_open(SEM_NAME, O_CREAT, 0644, 1); // Mutex behavior
+    if (sem == SEM_FAILED) {
+        perror("sem_open");
+        exit(EXIT_FAILURE);
+    }
 
-
-      // Lock
-    
+    printf("[Writer] Waiting for lock...\n");
+    sem_wait(sem);  // Lock
     printf("[Writer] Got lock. Writing...\n");
 
     FILE *f = fopen("/tmp/shared.txt", "a");
@@ -26,6 +30,7 @@ int main()
     sleep(2);  // Simulate long operation
     printf("[Writer] Done. Releasing lock.\n");
 
-    
+    sem_post(sem);  // Unlock
+    sem_close(sem);
     return 0;
 }

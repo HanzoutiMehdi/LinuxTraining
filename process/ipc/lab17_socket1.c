@@ -47,8 +47,20 @@ int main() {
     printf("Server is listening at %s\n", SOCKET_PATH);
 
     // Accept connection
-  
- 
+    client_fd = accept(server_fd, NULL, NULL);
+    if (client_fd == -1) {
+        perror("accept");
+        close(server_fd);
+        exit(EXIT_FAILURE);
+    }
+
+    // Receive message
+    int bytes = read(client_fd, buffer, BUFFER_SIZE);
+    if (bytes > 0) {
+        buffer[bytes] = '\0';
+        printf("Server received: %s\n", buffer);
+    }
+
     // Cleanup
     close(client_fd);
     close(server_fd);

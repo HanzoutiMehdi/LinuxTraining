@@ -25,6 +25,16 @@ int main() {
     addr.sun_family = AF_UNIX;
     strncpy(addr.sun_path, SOCKET_PATH, sizeof(addr.sun_path) - 1);
 
+    // Connect to server
+    if (connect(client_fd, (struct sockaddr *)&addr, sizeof(struct sockaddr_un)) == -1) {
+        perror("connect");
+        close(client_fd);
+        exit(EXIT_FAILURE);
+    }
+
+    // Send message
+    write(client_fd, message, strlen(message));
+    printf("Client sent: %s\n", message);
 
     // Cleanup
     close(client_fd);
