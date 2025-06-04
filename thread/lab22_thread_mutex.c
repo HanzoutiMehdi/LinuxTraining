@@ -21,10 +21,15 @@ void* increment_counter(void* arg)
     for (int i = 0; i < 1000; i++) 
     {
       
-
+      // mutual exclusion
+         // Lock the mutex before incrementing the counter
+         pthread_mutex_lock(&mutex);
+        
         // Increment the counter
         counter++;
 
+         //Unlock the mutex after incrementing the counter
+         pthread_mutex_unlock(&mutex); 
 
     }
     return NULL;
@@ -43,6 +48,11 @@ int main()
     // Initialize the mutex
     printf("Using Mutex for synchronization\n");
 
+    if (pthread_mutex_init(&mutex, NULL) != 0) 
+    {
+        printf("Mutex initialization failed\n");
+        return -1;
+    }
 
      // Start timing the execution
      start_time = clock();
@@ -74,7 +84,8 @@ int main()
     // Print the final value of the counter
     printf("Final counter value: %d\n", counter);
 
-
+    // Destroy the mutex
+    pthread_mutex_destroy(&mutex);
     
     return 0;
 }

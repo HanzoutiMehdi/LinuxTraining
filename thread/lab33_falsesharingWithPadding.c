@@ -5,8 +5,8 @@
 
 #define NUM_THREADS 4 // Number of threads
 #define ITERATIONS 100000000 // Number of increments per thread
-
-
+ // Cache line size (typically 64 bytes on x86/x64)
+ #define CACHE_LINE_SIZE 64
 
 // Structure to mitigate false sharing using padding
 // Padding ensures each 'value' member resides in its own cache line
@@ -14,7 +14,8 @@
 // So, we need 64 - 8 = 56 bytes of padding.
 // We use an array of 7 long longs (7 * 8 = 56 bytes) for padding.
 typedef struct {
-    long long value;
+    long long value;__attribute__((aligned(CACHE_LINE_SIZE)));
+    char padding[CACHE_LINE_SIZE - sizeof(int)];
 } counter_padded_t;
 
 

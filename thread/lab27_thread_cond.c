@@ -12,17 +12,17 @@ int shared_value = 0; // Shared variable
 void* waiter(void* arg)
  {
     int desired_value = 42; // The value to wait for
+    pthread_mutex_lock(&mutex);
 
     // Wait until shared_value reaches the desired value
-    while (shared_value != desired_value) 
-    {
+    while (shared_value != desired_value) {
         printf("Waiter: shared_value = %d, waiting for %d...\n", shared_value, desired_value);
+        pthread_cond_wait(&cond, &mutex);
     }
 
     // Condition is met (shared_value == desired_value)
     printf("============ > Waiter: Condition met! shared_value = %d\n", shared_value);
-
-
+    pthread_mutex_unlock(&mutex);
     return NULL;
 }
 
@@ -36,9 +36,13 @@ void* updater(void* arg)
      {
         printf("Updater: Updating shared_value...\n");
         sleep(1); // Simulate some work
+        pthread_mutex_lock(&mutex);
         // Update the shared variable to the desired value
         printf("Updater: Set shared_value to %d\n", shared_value);
         shared_value++;
+        // Signal the waiting thread
+        pthread_cond_signal(&cond);
+        pthread_mutex_unlock(&mutex);
      }
 
     return NULL;
@@ -49,7 +53,8 @@ int main()
     pthread_t waiter_thread, updater_thread;
 
     // Initialize mutex and condition variable
-
+    pthread_mutex_init(&mutex, NULL);
+    pthread_cond_init(&cond, NULL);
 
     // Create the waiter and updater threads
     pthread_create(&waiter_thread, NULL, waiter, NULL);

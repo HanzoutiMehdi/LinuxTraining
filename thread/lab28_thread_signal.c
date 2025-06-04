@@ -3,10 +3,15 @@
 #include <signal.h>
 #include <unistd.h>
 
+void handler(int sig) 
+{
+    printf("Thread received signal %d\n", sig);
+}
 
 void* thread_func(void* arg)
  {
-
+    // Register signal handler for SIGUSR1
+    signal(SIGUSR1, handler);
     printf("Thread: Going to sleep...\n");
     sleep(10); // Sleep, can be interrupted by a signal
     printf("Thread: Woke up\n");

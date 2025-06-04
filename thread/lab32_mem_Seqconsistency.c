@@ -1,13 +1,16 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>
-
+#include <stdatomic.h>
 int x = 0, y = 0;
 int r1 = 0, r2 = 0;
 
 void *thread1(void *arg)
 {
     x = 1;
+    // __sync_synchronize(); 
+     atomic_thread_fence(memory_order_seq_cst);
+
     r1 = y;
     return NULL;
 }
@@ -15,6 +18,9 @@ void *thread1(void *arg)
 void *thread2(void *arg)
 {
     y = 1;
+     atomic_thread_fence(memory_order_seq_cst);
+
+//     __sync_synchronize(); // Uncomment to prevent the race
     r2 = x;
     return NULL;
 }

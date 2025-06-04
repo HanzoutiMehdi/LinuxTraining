@@ -19,9 +19,12 @@ void* increment_counter(void* arg)
  {
     for (int i = 0; i < 1000; i++) 
     {
+        // Lock the spinlock before incrementing the counter
+        pthread_spin_lock(&spinlock);
         // Increment the counter
         counter++;
-
+        // Unlock the spinlock after incrementing the counter
+       // pthread_spin_unlock(&spinlock);
     }
     return NULL;
 }
@@ -38,6 +41,12 @@ int main()
 
     printf("Using Spinlock for synchronization\n");
 
+    // PTHREAD_PROCESS_PRIVATE is used for threads within the same process
+    if (pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0) 
+    {
+        perror("Failed to initialize spinlock");
+        return 1;
+    }
      // Start timing the execution
      start_time = clock();
 
